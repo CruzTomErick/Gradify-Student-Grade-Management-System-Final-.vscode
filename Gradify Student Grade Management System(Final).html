@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gradify - Student Grade Management System</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            gradify: {
+              teal: '#0F6278',
+              'teal-dark': '#0B4A5B',
+              'teal-light': '#E6F4F8',
+              navy: '#1C2D42',
+              'navy-dark': '#132030',
+              bg: '#F4F6F8',
+              card: '#FFFFFF',
+              pass: '#DEF7EC',
+              'pass-text': '#03543F',
+              fail: '#FDE8E8',
+              'fail-text': '#9B1C1C',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F4F6F8;
+      color: #1F2937;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen">
+
+  <div id="app" class="min-h-screen"></div>
+
+  <!-- Application JavaScript -->
+  <script>
+    // --- Initial Mock Data ---
+    const INITIAL_STUDENTS = [
+      {
+        id: "2026-001",
+        firstName: "Emma Louise",
+        lastName: "Santos",
+        grade: "Grade 7",
+        section: "7 · Acacia",
+        rawSection: "Acacia",
+        dob: "2013-03-14",
+        dobFormatted: "March 14, 2013",
+        gender: "Female",
+        status: "Enrolled",
+        parentName: "Ana Santos",
+        relationship: "Mother",
+        mobile: "0917 555 0101",
+        email: "ana.santos@example.com",
+        address: "24 Mabini Street, Riverside City",
+        teacherNotes: "Guardian prefers academic updates by email.",
+        grades: {
+          English: 88,
+          Math: 90,
+          Science: 86,
+          Filipino: 92,
+          "Araling Panlipunan": 89,
+          MAPEH: 83
+        }
+      },
+      {
+        id: "2026-002",
+        firstName: "Noah",
+        lastName: "Reyes",
+        grade: "Grade 7",
+        section: "7 · Acacia",
+        rawSection: "Acacia",
+        dob: "2013-06-10",
+        dobFormatted: "June 10, 2013",
+        gender: "Male",
+        status: "Enrolled",
+        parentName: "Carlos Reyes",
+        relationship: "Father",
+        mobile: "0917 555 0102",
+        email: "carlos.reyes@example.com",
+        address: "Pasig City",
+        teacherNotes: "Needs extra tutoring in Mathematics and MAPEH.",
+        grades: {
+          English: 70,
+          Math: 74,
+          Science: 72,
+          Filipino: 76,
+          "Araling Panlipunan": 73,
+          MAPEH: 67
+        }
+      },
+      {
+        id: "2026-003",
+        firstName: "Olivia",
+        lastName: "Cruz",
+        grade: "Grade 7",
+        section: "7 · Acacia",
+        rawSection: "Acacia",
+        dob: "2013-08-22",
+        dobFormatted: "August 22, 2013",
+        gender: "Female",
+        status: "Enrolled",
+        parentName: "Roberto Cruz",
+        relationship: "Father",
+        mobile: "0917 555 0103",
+        email: "roberto.cruz@example.com",
+        address: "Pasig City",
+        teacherNotes: "",
+        grades: {
+          English: 85,
+          Math: 82,
+          Science: 84,
+          Filipino: 86,
+          "Araling Panlipunan": 83,
+          MAPEH: 84
+        }
+      },
+      {
+        id: "2026-004",
+        firstName: "Liam",
+        lastName: "Garcia",
+        grade: "Grade 7",
+        section: "7 · Acacia",
+        rawSection: "Acacia",
+        dob: "2013-01-15",
+        dobFormatted: "January 15, 2013",
+        gender: "Male",
+        status: "Enrolled",
+        parentName: "Maria Garcia",
+        relationship: "Mother",
+        mobile: "0917 555 0104",
+        email: "maria.garcia@example.com",
+        address: "Pasig City",
+        teacherNotes: "Consistently performs excellently in class activities.",
+        grades: {
+          English: 90,
+          Math: 92,
+          Science: 91,
+          Filipino: 93,
+          "Araling Panlipunan": 89,
+          MAPEH: 91
+        }
+      },
+      {
+        id: "2026-005",
+        firstName: "Sophia",
+        lastName: "Ramos",
+        grade: "Grade 7",
+        section: "7 · Narra",
+        rawSection: "Narra",
+        dob: "2013-04-05",
+        dobFormatted: "April 5, 2013",
+        gender: "Female",
+        status: "Enrolled",
+        parentName: "Elena Ramos",
+        relationship: "Mother",
+        mobile: "0917 555 0105",
+        email: "elena.ramos@example.com",
+        address: "Pasig City",
+        teacherNotes: "",
+        grades: {
+          English: 80,
+          Math: 78,
+          Science: 79,
+          Filipino: 81,
+          "Araling Panlipunan": 78,
+          MAPEH: 78
+        }
+      },
+      {
+        id: "2026-006",
+        firstName: "Lucas",
+        lastName: "Mendoza",
+        grade: "Grade 7",
+        section: "7 · Narra",
+        rawSection: "Narra",
+        dob: "2013-11-12",
+        dobFormatted: "November 12, 2013",
+        gender: "Male",
+        status: "Enrolled",
+        parentName: "David Mendoza",
+        relationship: "Father",
+        mobile: "0917 555 0106",
+        email: "david.mendoza@example.com",
+        address: "Pasig City",
+        teacherNotes: "",
+        grades: {
+          English: 76,
+          Math: 75,
+          Science: 77,
+          Filipino: 78,
+          "Araling Panlipunan": 75,
+          MAPEH: 75
+        }
+      },
+      {
+        id: "2026-007",
+        firstName: "Isabella",
+        lastName: "Torres",
+        grade: "Grade 7",
+        section: "7 · Narra",
+        rawSection: "Narra",
+        dob: "2013-09-30",
+        dobFormatted: "September 30, 2013",
+        gender: "Female",
+        status: "Enrolled",
+        parentName: "Lucia Torres",
+        relationship: "Mother",
+        mobile: "0917 555 0107",
+        email: "lucia.torres@example.com",
+        address: "Pasig City",
+        teacherNotes: "",
+        grades: {
+          English: 86,
+          Math: 84,
+          Science: 85,
+          Filipino: 87,
+          "Araling Panlipunan": 84,
+          MAPEH: 84
+        }
+      },
+      {
+        id: "2026-008",
+        firstName: "Ethan",
+        lastName: "Flores",
+        grade: "Grade 7",
+        section: "7 · Narra",
+        rawSection: "Narra",
+        dob: "2013-02-18",
+        dobFormatted: "February 18, 2013",
+        gender: "Male",
+        status: "Enrolled",
+        parentName: "Grace Flores",
+        relationship: "Mother",
+        mobile: "0917 555 0108",
+        email: "grace.flores@example.com",
+        address: "Pasig City",
+        teacherNotes: "",
+        grades: {
+          English: 92,
+          Math: 90,
+          Science: 91,
+          Filipino: 92,
+          "Araling Panlipunan": 90,
+          MAPEH: 90
+        }
+      }
+    ];
+
+    // --- State Management ---
+    const state = {
+      isLoggedIn: true,
+      activeTab: 'dashboard', // dashboard, students, grades, reports, profile
+      students: JSON.parse(localStorage.getItem('gradify_students')) || INITIAL_STUDENTS,
+      selectedStudentId: null,
+      selectedSectionFilter: 'All', // 'All', '7 Acacia', '7 Narra'
+      searchQuery: '',
+      statusFilter: 'All', // 'All', 'Passed', 'Failed'
+      
+      // Modals and Sub-views
+      showAddStudentModal: false,
+      showEditStudentModal: false,
+      showDiscardChangesModal: false,
+      showLogoutModal: false,
+      showPrintReportModal: false,
+      toastMessage: null,
+      
+      // Edit Student Form State
+      editForm: {},
+      isEditFormDirty: false,
+      
+      // Add Student Form State
+      addForm: {
+        firstName: '',
+        lastName: '',
+        studentId: '',
+        section: '7 · Acacia',
+        dob: '',
+        gender: 'Female',
+        parentName: '',
+        relationship: 'Mother',
+        mobile: '',
+        email: '',
+        address: '',
+        teacherNotes: ''
+      },
+
+      // Grade Editor State
+      gradeEditorStep: 1, // 1: Select Student, 2: Input Grades, 3: Success
+      gradeEditorStudentId: '2026-001',
+      gradeEditorSection: '7 · Acacia',
+      gradeEditorTempGrades: {},
+
+      // Teacher Profile State
+      teacherProfile: {
+        name: "Maria D. Cruz",
+        email: "maria.cruz@riverside.edu.ph",
+        facultyId: "RJHS-T-014",
+        title: "Grade 7 teacher",
+        phone: "+63 917 123 4567",
+        emailNotifications: true,
+        autoCalculateAverage: true
+      },
+
+      // Login Screen Form
+      loginEmail: 'maria.cruz@riverside.edu.ph',
+      loginPassword: '••••••••••••',
+      loginErrors: {}
+    };
+
+    // Save to LocalStorage
+    function persistData() {
+      localStorage.setItem('gradify_students', JSON.stringify(state.students));
+    }
+
+    // Helper: Compute average grade for a student
+    function calcAverage(grades) {
+      if (!grades) return "0.00";
+      const keys = Object.keys(grades);
+      if (keys.length === 0) return "0.00";
+      const sum = keys.reduce((acc, k) => acc + (parseFloat(grades[k]) || 0), 0);
+      return (sum / keys.length).toFixed(2);
+    }
+
+    // Helper: Check passing status (Threshold 75)
+    function isPassing(average) {
+      return parseFloat(average) >= 75.00;
+    }
+
+    // Helper: Show Toast Notification
+    function showToast(msg) {
+      state.toastMessage = msg;
+      render();
+      setTimeout(() => {
+        state.toastMessage = null;
+        render();
+      }, 3500);
+    }
+
+    // --- Action Handlers ---
+    function setTab(tab, studentId = null) {
+      state.activeTab = tab;
+      if (studentId) {
+        state.selectedStudentId = studentId;
+      }
+      if (tab === 'grades') {
+        state.gradeEditorStep = 1;
+        if (studentId) {
+          state.gradeEditorStudentId = studentId;
+          const s = state.students.find(x => x.id === studentId);
+          if (s) {
+            state.gradeEditorSection = s.section;
+            state.gradeEditorTempGrades = { ...s.grades };
+            state.gradeEditorStep = 2;
+          }
+        }
+      }
+      render();
+    }
+
+    function openEditStudentModal(student) {
+      state.editForm = JSON.parse(JSON.stringify(student));
+      state.isEditFormDirty = false;
+      state.showEditStudentModal = true;
+      render();
+    }
+
+    function closeEditStudentModal(checkDirty = true) {
+      if (checkDirty && state.isEditFormDirty) {
+        state.showDiscardChangesModal = true;
+      } else {
+        state.showEditStudentModal = false;
+        state.showDiscardChangesModal = false;
+        state.isEditFormDirty = false;
+      }
+      render();
+    }
+
+    function saveStudentEdits(e) {
+      e.preventDefault();
+      const idx = state.students.findIndex(s => s.id === state.editForm.id);
+      if (idx !== -1) {
+        // Format raw section label
+        state.editForm.rawSection = state.editForm.section.includes('Acacia') ? 'Acacia' : 'Narra';
+        state.students[idx] = { ...state.editForm };
+        persistData();
+        showToast(`Updated ${state.editForm.firstName} ${state.editForm.lastName}'s details.`);
+      }
+      state.showEditStudentModal = false;
+      state.isEditFormDirty = false;
+      render();
+    }
+
+    function handleAddStudentSubmit(e) {
+      e.preventDefault();
+      const newId = `2026-00${state.students.length + 1}`;
+      const rawSec = state.addForm.section.includes('Acacia') ? 'Acacia' : 'Narra';
+      
+      const newStudent = {
+        id: newId,
+        firstName: state.addForm.firstName,
+        lastName: state.addForm.lastName,
+        grade: "Grade 7",
+        section: state.addForm.section,
+        rawSection: rawSec,
+        dob: state.addForm.dob,
+        dobFormatted: state.addForm.dob ? new Date(state.addForm.dob).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A',
+        gender: state.addForm.gender,
+        status: "Enrolled",
+        parentName: state.addForm.parentName,
+        relationship: state.addForm.relationship,
+        mobile: state.addForm.mobile,
+        email: state.addForm.email,
+        address: state.addForm.address,
+        teacherNotes: state.addForm.teacherNotes,
+        grades: {
+          English: 75,
+          Math: 75,
+          Science: 75,
+          Filipino: 75,
+          "Araling Panlipunan": 75,
+          MAPEH: 75
+        }
+      };
+
+      state.students.push(newStudent);
+      persistData();
+      state.showAddStudentModal = false;
+      showToast(`Student ${newStudent.firstName} ${newStudent.lastName} registered successfully!`);
+      // Reset form
+      state.addForm = {
+        firstName: '', lastName: '', studentId: '', section: '7 · Acacia', dob: '',
+        gender: 'Female', parentName: '', relationship: 'Mother', mobile: '', email: '', address: '', teacherNotes: ''
+      };
+      render();
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      state.loginErrors = {};
+      if (!state.loginEmail.trim()) {
+        state.loginErrors.email = 'School email is required.';
+      }
+      if (!state.loginPassword.trim()) {
+        state.loginErrors.password = 'Password is required.';
+      }
+
+      if (Object.keys(state.loginErrors).length === 0) {
+        state.isLoggedIn = true;
+        state.activeTab = 'dashboard';
+        showToast("Welcome back, Teacher Maria!");
+      }
+      render();
+    }
+
+    function handleLogout() {
+      state.isLoggedIn = false;
+      state.showLogoutModal = false;
+      render();
+    }
+
+    function handleSaveGrades() {
+      const student = state.students.find(s => s.id === state.gradeEditorStudentId);
+      if (student) {
+        student.grades = { ...state.gradeEditorTempGrades };
+        persistData();
+        showToast(`Grades for ${student.firstName} ${student.lastName} saved successfully!`);
+        state.gradeEditorStep = 3;
+      }
+      render();
+    }
+
+    // --- UI Render Components ---
+
+    function renderSidebar() {
+      const links = [
+        { id: 'dashboard', label: 'Dashboard', icon: 'fa-table-cells-large' },
+        { id: 'students', label: 'Students', icon: 'fa-user-group' },
+        { id: 'grades', label: 'Grades', icon: 'fa-clipboard-list' },
+        { id: 'reports', label: 'Reports', icon: 'fa-chart-line' },
+        { id: 'profile', label: 'Profile', icon: 'fa-user' },
+      ];
+
+      return `
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col justify-between p-4 flex-shrink-0">
+          <div>
+            <!-- Brand Header -->
+            <div class="flex items-center space-x-3 mb-6 px-2">
+              <div class="w-10 h-10 bg-gradify-navy rounded-xl flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-graduation-cap text-xl"></i>
+              </div>
+              <div>
+                <h1 class="font-bold text-gray-900 text-lg leading-tight">Gradify</h1>
+                <p class="text-xs text-gray-500 font-normal">Student Grade Management System</p>
+              </div>
+            </div>
+
+            <!-- School Branch -->
+            <div class="px-2 mb-6">
+              <p class="text-xs font-semibold text-gray-800 leading-snug">
+                Asia Source iCollege – Pasig City Branch
+              </p>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1">
+              ${links.map(link => {
+                const isActive = state.activeTab === link.id;
+                return `
+                  <button 
+                    onclick="setTab('${link.id}')"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      isActive 
+                        ? 'bg-gradify-teal-light text-gradify-teal font-semibold' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <i class="fa-solid ${link.icon} text-base ${isActive ? 'text-gradify-teal' : 'text-gray-400'}"></i>
+                      <span>${link.label}</span>
+                    </div>
+                    ${isActive ? `<div class="w-1.5 h-5 bg-gradify-teal rounded-full"></div>` : ''}
+                  </button>
+                `;
+              }).join('')}
+
+              <button 
+                onclick="state.showLogoutModal = true; render();"
+                class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all mt-4"
+              >
+                <i class="fa-solid fa-arrow-right-from-bracket text-base text-gray-400"></i>
+                <span>Logout</span>
+              </button>
+            </nav>
+          </div>
+
+          <!-- Bottom Meta & User Profile -->
+          <div class="space-y-4">
+            <!-- Academic Period Box -->
+            <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+              <p class="text-[11px] font-bold tracking-wider text-gray-400 uppercase">Academic Period</p>
+              <p class="text-sm font-bold text-gray-800 mt-0.5">2026–2027 · Quarter 1</p>
+              <p class="text-xs text-gray-500 mt-1">Passing threshold: <span class="font-semibold text-gray-700">75</span></p>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="flex items-center space-x-3 pt-2 px-1">
+              <div class="w-9 h-9 rounded-full bg-gradify-teal-light text-gradify-teal font-bold flex items-center justify-center text-xs border border-teal-200">
+                MC
+              </div>
+              <div class="overflow-hidden">
+                <p class="text-sm font-bold text-gray-900 truncate leading-snug">${state.teacherProfile.name}</p>
+                <p class="text-xs text-gray-500 truncate">${state.teacherProfile.title}</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      `;
+    }
+
+    // --- DASHBOARD VIEW ---
+    function renderDashboard() {
+      const totalStudents = state.students.length;
+      
+      // Calculate Overall Stats
+      let totalAvgSum = 0;
+      let passingCount = 0;
+      let failingCount = 0;
+
+      const acaciaStudents = state.students.filter(s => s.section.includes('Acacia'));
+      const narraStudents = state.students.filter(s => s.section.includes('Narra'));
+
+      const calcSecAvg = (list) => {
+        if (!list.length) return 0;
+        const sum = list.reduce((acc, s) => acc + parseFloat(calcAverage(s.grades)), 0);
+        return (sum / list.length).toFixed(2);
+      };
+
+      const acaciaAvg = calcSecAvg(acaciaStudents);
+      const narraAvg = calcSecAvg(narraStudents);
+
+      const acaciaPassing = acaciaStudents.filter(s => isPassing(calcAverage(s.grades))).length;
+      const narraPassing = narraStudents.filter(s => isPassing(calcAverage(s.grades))).length;
+
+      state.students.forEach(s => {
+        const avg = parseFloat(calcAverage(s.grades));
+        totalAvgSum += avg;
+        if (avg >= 75) passingCount++;
+        else failingCount++;
+      });
+
+      const genAverage = (totalAvgSum / totalStudents).toFixed(2);
+      const passPercentage = ((passingCount / totalStudents) * 100).toFixed(1);
+
+      return `
+        <div class="p-8 max-w-7xl mx-auto space-y-8">
+          <!-- Page Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Good day, Maria</h1>
+              <p class="text-gray-500 text-sm mt-1">This is your classroom overview for Quarter 1, SY 2026–2027.</p>
+            </div>
+            <button 
+              onclick="state.showAddStudentModal = true; render();"
+              class="inline-flex items-center justify-center px-4 py-2.5 bg-gradify-teal hover:bg-gradify-teal-dark text-white rounded-lg font-medium text-sm transition-colors shadow-sm gap-2"
+            >
+              <i class="fa-solid fa-user-plus text-xs"></i>
+              <span>Add Student</span>
+            </button>
+          </div>
+
+          <!-- Top Metric Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Card 1 -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+              <div>
+                <span class="text-3xl font-extrabold text-gray-900">${totalStudents}</span>
+                <p class="text-xs font-semibold text-gray-500 mt-1">Enrolled students</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">Across 2 Grade 7 sections</p>
+              </div>
+              <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                <i class="fa-solid fa-users text-lg"></i>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+              <div>
+                <span class="text-3xl font-extrabold text-gray-900">${genAverage}</span>
+                <p class="text-xs font-semibold text-gray-500 mt-1">Class general average</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">Across 2 Grade 7 sections</p>
+              </div>
+              <div class="w-10 h-10 rounded-full bg-teal-50 text-gradify-teal flex items-center justify-center">
+                <i class="fa-solid fa-chart-line text-lg"></i>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+              <div>
+                <span class="text-3xl font-extrabold text-gray-900">${passingCount} / ${totalStudents}</span>
+                <p class="text-xs font-semibold text-gray-500 mt-1">Passing student</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">${passPercentage}% · threshold 75</p>
+              </div>
+              <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i class="fa-solid fa-circle-check text-lg"></i>
+              </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+              <div>
+                <span class="text-3xl font-extrabold text-gray-900">${failingCount}</span>
+                <p class="text-xs font-semibold text-gray-500 mt-1">Needs support</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">General average below 75</p>
+              </div>
+              <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+                <i class="fa-solid fa-flag text-lg"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Breakdown & Performance Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Your Sections Table -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <h2 class="text-base font-bold text-gray-900">Your sections</h2>
+                  <button onclick="setTab('students')" class="text-xs text-gradify-teal hover:underline font-semibold border border-gray-200 px-3 py-1 rounded-md">
+                    <i class="fa-solid fa-users text-[10px] mr-1"></i> View Students
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mb-4">All student records are complete for this quarter.</p>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-100">
+                        <th class="py-2.5 px-3">Section</th>
+                        <th class="py-2.5 px-3">Students</th>
+                        <th class="py-2.5 px-3">Average</th>
+                        <th class="py-2.5 px-3">Passing</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-gray-700 font-medium">
+                      <tr>
+                        <td class="py-3 px-3 font-bold text-gray-900">7 · Acacia</td>
+                        <td class="py-3 px-3">${acaciaStudents.length}</td>
+                        <td class="py-3 px-3">${acaciaAvg}</td>
+                        <td class="py-3 px-3">${acaciaPassing} of ${acaciaStudents.length}</td>
+                      </tr>
+                      <tr>
+                        <td class="py-3 px-3 font-bold text-gray-900">7 · Narra</td>
+                        <td class="py-3 px-3">${narraStudents.length}</td>
+                        <td class="py-3 px-3">${narraAvg}</td>
+                        <td class="py-3 px-3">${narraPassing} of ${narraStudents.length}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quarter Performance Bar -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col justify-between">
+              <div>
+                <h2 class="text-base font-bold text-gray-900 mb-1">Quarter performance</h2>
+                <p class="text-xs text-gray-500 mb-6">General average distribution</p>
+
+                <!-- Progress bar -->
+                <div class="w-full bg-red-400 rounded-full h-3.5 flex overflow-hidden mb-6">
+                  <div class="bg-gradify-teal h-full" style="width: ${passPercentage}%"></div>
+                  <div class="bg-rose-500 h-full" style="width: ${100 - passPercentage}%"></div>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2">
+                      <span class="w-3 h-3 bg-gradify-teal rounded-sm"></span>
+                      <span class="font-semibold text-gray-700">Passing</span>
+                    </div>
+                    <span class="font-bold text-gray-900">${passingCount} students · ${passPercentage}%</span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2">
+                      <span class="w-3 h-3 bg-rose-500 rounded-sm"></span>
+                      <span class="font-semibold text-gray-700">Failing</span>
+                    </div>
+                    <span class="font-bold text-gray-900">${failingCount} student · ${(100 - passPercentage).toFixed(1)}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-[11px] text-gray-400 mt-6 border-t border-gray-100 pt-3">
+                Equal-weight subject averages. Passing is a general average of 75 or higher.
+              </p>
+            </div>
+          </div>
+
+          <!-- Student Snapshot Table -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+            <div class="mb-4">
+              <h2 class="text-base font-bold text-gray-900">Student snapshot</h2>
+              <p class="text-xs text-gray-500 mt-0.5">Recently reviewed academic records · October 5, 2026</p>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-100">
+                    <th class="py-3 px-3">Student</th>
+                    <th class="py-3 px-3">Section</th>
+                    <th class="py-3 px-3">General Average</th>
+                    <th class="py-3 px-3">Status</th>
+                    <th class="py-3 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 font-medium text-gray-700">
+                  ${state.students.slice(0, 4).map(s => {
+                    const avg = calcAverage(s.grades);
+                    const pass = isPassing(avg);
+                    return `
+                      <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3.5 px-3 font-bold text-gray-900">${s.firstName} ${s.lastName}</td>
+                        <td class="py-3.5 px-3">${s.section}</td>
+                        <td class="py-3.5 px-3 font-semibold">${avg}</td>
+                        <td class="py-3.5 px-3">
+                          <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                            pass ? 'bg-gradify-pass text-gradify-pass-text' : 'bg-gradify-fail text-gradify-fail-text'
+                          }">
+                            ${pass ? 'Passing' : 'Failing'}
+                          </span>
+                        </td>
+                        <td class="py-3.5 px-3 text-right">
+                          <button 
+                            onclick="setTab('students', '${s.id}')" 
+                            class="text-gradify-teal font-semibold hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>View Student</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- STUDENTS MANAGEMENT VIEW ---
+    function renderStudents() {
+      // If a student ID is selected, show details page
+      if (state.selectedStudentId) {
+        return renderStudentDetail(state.selectedStudentId);
+      }
+
+      // Filter Students List
+      let filtered = state.students.filter(s => {
+        // Filter by section
+        if (state.selectedSectionFilter !== 'All') {
+          if (state.selectedSectionFilter === '7 Acacia' && !s.section.includes('Acacia')) return false;
+          if (state.selectedSectionFilter === '7 Narra' && !s.section.includes('Narra')) return false;
+        }
+
+        // Filter by status
+        const avg = calcAverage(s.grades);
+        const pass = isPassing(avg);
+        if (state.statusFilter === 'Passed' && !pass) return false;
+        if (state.statusFilter === 'Failed' && pass) return false;
+
+        // Search Query
+        if (state.searchQuery.trim()) {
+          const q = state.searchQuery.toLowerCase().trim();
+          const fullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+          const id = s.id.toLowerCase();
+          if (!fullName.includes(q) && !id.includes(q)) return false;
+        }
+
+        return true;
+      });
+
+      return `
+        <div class="p-8 max-w-7xl mx-auto space-y-6">
+          <!-- Page Title Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Students</h1>
+              <p class="text-gray-500 text-sm mt-1">Manage student information and academic records by section.</p>
+            </div>
+            <button 
+              onclick="state.showAddStudentModal = true; render();"
+              class="inline-flex items-center justify-center px-4 py-2.5 bg-gradify-teal hover:bg-gradify-teal-dark text-white rounded-lg font-medium text-sm transition-colors shadow-sm gap-2"
+            >
+              <i class="fa-solid fa-user-plus text-xs"></i>
+              <span>Add Student</span>
+            </button>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h2 class="text-base font-bold text-gray-900">Registered Students</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Filter: Section -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Section</label>
+                <select 
+                  onchange="state.selectedSectionFilter = this.value; render();" 
+                  class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gradify-teal focus:border-gradify-teal outline-none bg-white"
+                >
+                  <option value="All" ${state.selectedSectionFilter === 'All' ? 'selected' : ''}>All Sections</option>
+                  <option value="7 Acacia" ${state.selectedSectionFilter === '7 Acacia' ? 'selected' : ''}>7 Acacia</option>
+                  <option value="7 Narra" ${state.selectedSectionFilter === '7 Narra' ? 'selected' : ''}>7 Narra</option>
+                </select>
+              </div>
+
+              <!-- Search Bar -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Search students</label>
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    placeholder="Search by name or student ID"
+                    value="${state.searchQuery}"
+                    oninput="state.searchQuery = this.value; render();"
+                    class="w-full text-sm border border-gray-300 rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-gradify-teal focus:border-gradify-teal outline-none"
+                  />
+                  ${state.searchQuery ? `
+                    <button onclick="state.searchQuery = ''; render();" class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600">
+                      <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+
+              <!-- Filter: Academic Status -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Academic status</label>
+                <select 
+                  onchange="state.statusFilter = this.value; render();"
+                  class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gradify-teal focus:border-gradify-teal outline-none bg-white"
+                >
+                  <option value="All" ${state.statusFilter === 'All' ? 'selected' : ''}>All statuses</option>
+                  <option value="Passed" ${state.statusFilter === 'Passed' ? 'selected' : ''}>Passed</option>
+                  <option value="Failed" ${state.statusFilter === 'Failed' ? 'selected' : ''}>Failed</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Student Table / Empty State -->
+            <div class="pt-2">
+              ${filtered.length > 0 ? `
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs">
+                    <thead>
+                      <tr class="text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-200">
+                        <th class="py-3 px-3">Student ID</th>
+                        <th class="py-3 px-3">Student Name</th>
+                        <th class="py-3 px-3">Section</th>
+                        <th class="py-3 px-3">Average</th>
+                        <th class="py-3 px-3">Status</th>
+                        <th class="py-3 px-3 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 font-medium text-gray-700">
+                      ${filtered.map(s => {
+                        const avg = calcAverage(s.grades);
+                        const pass = isPassing(avg);
+                        return `
+                          <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-3.5 px-3 text-gray-500 font-mono">${s.id}</td>
+                            <td class="py-3.5 px-3">
+                              <p class="font-bold text-gray-900">${s.firstName} ${s.lastName}</p>
+                              <p class="text-[11px] text-gray-400">${s.status} · ${s.grade}</p>
+                            </td>
+                            <td class="py-3.5 px-3 font-medium text-gray-600">${s.section}</td>
+                            <td class="py-3.5 px-3 font-semibold text-gray-900">${avg}</td>
+                            <td class="py-3.5 px-3">
+                              <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                                pass ? 'bg-gradify-pass text-gradify-pass-text' : 'bg-gradify-fail text-gradify-fail-text'
+                              }">
+                                ${pass ? 'Passing' : 'Failing'}
+                              </span>
+                            </td>
+                            <td class="py-3.5 px-3 text-right">
+                              <button 
+                                onclick="state.selectedStudentId = '${s.id}'; render();" 
+                                class="border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-3 py-1.5 rounded-lg text-xs transition-colors bg-white shadow-sm"
+                              >
+                                View Student
+                              </button>
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              ` : `
+                <!-- Desktop - 17.png Empty Search State -->
+                <div class="border border-gray-200 rounded-xl p-12 text-center my-4 bg-gray-50/50">
+                  <h3 class="text-base font-bold text-gray-800">No matching student records</h3>
+                  <p class="text-xs text-gray-500 max-w-md mx-auto mt-1 leading-relaxed">
+                    No records match "${state.searchQuery || state.statusFilter}" in selected sections. Try a student name or school-issued ID.
+                  </p>
+                  <button 
+                    onclick="state.searchQuery = ''; state.statusFilter = 'All'; state.selectedSectionFilter = 'All'; render();"
+                    class="mt-4 px-4 py-2 bg-gradify-teal text-white rounded-lg text-xs font-semibold hover:bg-gradify-teal-dark transition-colors shadow-sm"
+                  >
+                    Clear search
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- STUDENT DETAIL VIEW ---
+    function renderStudentDetail(studentId) {
+      const student = state.students.find(s => s.id === studentId);
+      if (!student) {
+        state.selectedStudentId = null;
+        return renderStudents();
+      }
+
+      const avg = calcAverage(student.grades);
+      const pass = isPassing(avg);
+
+      return `
+        <div class="p-8 max-w-7xl mx-auto space-y-6">
+          <!-- Back Link Header -->
+          <div>
+            <button 
+              onclick="state.selectedStudentId = null; render();" 
+              class="inline-flex items-center space-x-2 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors mb-3"
+            >
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              <span>Back · Students</span>
+            </button>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center space-x-3">
+                  <h1 class="text-3xl font-bold text-gray-900">${student.firstName} ${student.lastName}</h1>
+                  <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                    pass ? 'bg-gradify-pass text-gradify-pass-text' : 'bg-gradify-fail text-gradify-fail-text'
+                  }">
+                    ${pass ? 'Passing' : 'Failing'}
+                  </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Student ID: <span class="font-mono font-medium">${student.id}</span> · ${student.section}</p>
+              </div>
+
+              <div class="flex items-center space-x-3">
+                <button 
+                  onclick="openEditStudentModal(state.students.find(s => s.id === '${student.id}'))"
+                  class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-pen text-xs"></i>
+                  <span>Edit Info</span>
+                </button>
+
+                <button 
+                  onclick="setTab('grades', '${student.id}')"
+                  class="px-4 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-pen-to-square text-xs"></i>
+                  <span>Edit Grades</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid: Personal & Guardian Info -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Personal Info Card -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <h2 class="text-base font-bold text-gray-900 pb-2 border-b border-gray-100">Personal Information</h2>
+              
+              <div class="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <p class="text-gray-400 font-medium">Full Name</p>
+                  <p class="font-bold text-gray-800 text-sm mt-0.5">${student.firstName} ${student.lastName}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Date of Birth</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.dobFormatted || student.dob}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Gender</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.gender}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Enrollment Status</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.status}</p>
+                </div>
+                <div class="col-span-2">
+                  <p class="text-gray-400 font-medium">Home Address</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.address || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guardian & Contact Info Card -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <h2 class="text-base font-bold text-gray-900 pb-2 border-b border-gray-100">Guardian & Contact Information</h2>
+              
+              <div class="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <p class="text-gray-400 font-medium">Parent / Guardian</p>
+                  <p class="font-bold text-gray-800 text-sm mt-0.5">${student.parentName || 'N/A'}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Relationship</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.relationship || 'N/A'}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Mobile Number</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.mobile || 'N/A'}</p>
+                </div>
+                <div>
+                  <p class="text-gray-400 font-medium">Email Address</p>
+                  <p class="font-semibold text-gray-800 text-sm mt-0.5">${student.email || 'N/A'}</p>
+                </div>
+                <div class="col-span-2">
+                  <p class="text-gray-400 font-medium">Teacher Notes</p>
+                  <p class="font-normal text-gray-600 text-xs mt-1 italic">${student.teacherNotes || 'No notes added.'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Performance Breakdown -->
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div>
+                <h2 class="text-base font-bold text-gray-900">Academic Performance · Quarter 1</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Subject grade breakdown</p>
+              </div>
+              <div class="text-right">
+                <span class="text-2xl font-black text-gray-900">${avg}</span>
+                <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">General Average</p>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-100">
+                    <th class="py-3 px-3">Subject</th>
+                    <th class="py-3 px-3 text-center">Grade</th>
+                    <th class="py-3 px-3 text-center">Status</th>
+                    <th class="py-3 px-3">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 font-medium text-gray-700">
+                  ${Object.entries(student.grades).map(([subj, score]) => {
+                    const subjPass = score >= 75;
+                    return `
+                      <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3.5 px-3 font-bold text-gray-900">${subj}</td>
+                        <td class="py-3.5 px-3 text-center font-bold text-sm ${subjPass ? 'text-gray-800' : 'text-rose-600'}">${score}</td>
+                        <td class="py-3.5 px-3 text-center">
+                          <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            subjPass ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                          }">
+                            ${subjPass ? 'PASSED' : 'NEEDS SUPPORT'}
+                          </span>
+                        </td>
+                        <td class="py-3.5 px-3 text-gray-500 text-xs">
+                          ${subjPass ? 'Satisfactory academic progress' : 'Requires immediate academic assistance'}
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- GRADES / GRADE EDITOR VIEW ---
+    function renderGrades() {
+      const selectedStudent = state.students.find(s => s.id === state.gradeEditorStudentId) || state.students[0];
+
+      // Sync section list
+      const sectionStudents = state.students.filter(s => {
+        if (state.gradeEditorSection === '7 · Acacia') return s.section.includes('Acacia');
+        if (state.gradeEditorSection === '7 · Narra') return s.section.includes('Narra');
+        return true;
+      });
+
+      // Prepare temp grades object if not set
+      if (!state.gradeEditorTempGrades || Object.keys(state.gradeEditorTempGrades).length === 0) {
+        state.gradeEditorTempGrades = { ...selectedStudent.grades };
+      }
+
+      const tempAvg = calcAverage(state.gradeEditorTempGrades);
+      const tempPass = isPassing(tempAvg);
+
+      // Identify low performing subjects (< 75)
+      const lowSubjects = Object.entries(state.gradeEditorTempGrades).filter(([_, score]) => Number(score) < 75);
+
+      return `
+        <div class="p-8 max-w-5xl mx-auto space-y-6">
+          <!-- Page Title -->
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Grade Management</h1>
+            <p class="text-gray-500 text-sm mt-1">Input and manage Quarter 1 subject scores for students.</p>
+          </div>
+
+          <!-- Wizard Step Indicator -->
+          <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-around text-xs font-bold">
+            <div class="flex items-center space-x-2 ${state.gradeEditorStep >= 1 ? 'text-gradify-teal' : 'text-gray-400'}">
+              <span class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs">1</span>
+              <span>Select Student</span>
+            </div>
+            <div class="w-12 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2 ${state.gradeEditorStep >= 2 ? 'text-gradify-teal' : 'text-gray-400'}">
+              <span class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs">2</span>
+              <span>Input & Calculate Grades</span>
+            </div>
+            <div class="w-12 h-0.5 bg-gray-200"></div>
+            <div class="flex items-center space-x-2 ${state.gradeEditorStep >= 3 ? 'text-gradify-teal' : 'text-gray-400'}">
+              <span class="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs">3</span>
+              <span>Review Summary</span>
+            </div>
+          </div>
+
+          <!-- Step 1: Selector Bar -->
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Step 1: Choose Section & Student</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Section</label>
+                <select 
+                  onchange="
+                    state.gradeEditorSection = this.value; 
+                    const firstInSec = state.students.find(s => this.value.includes('Acacia') ? s.section.includes('Acacia') : s.section.includes('Narra'));
+                    if(firstInSec) {
+                      state.gradeEditorStudentId = firstInSec.id;
+                      state.gradeEditorTempGrades = {...firstInSec.grades};
+                    }
+                    render();
+                  "
+                  class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gradify-teal focus:border-gradify-teal outline-none bg-white"
+                >
+                  <option value="7 · Acacia" ${state.gradeEditorSection.includes('Acacia') ? 'selected' : ''}>7 · Acacia</option>
+                  <option value="7 · Narra" ${state.gradeEditorSection.includes('Narra') ? 'selected' : ''}>7 · Narra</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Student</label>
+                <select 
+                  onchange="
+                    state.gradeEditorStudentId = this.value; 
+                    const s = state.students.find(x => x.id === this.value);
+                    if(s) state.gradeEditorTempGrades = {...s.grades};
+                    state.gradeEditorStep = 2;
+                    render();
+                  "
+                  class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gradify-teal focus:border-gradify-teal outline-none bg-white"
+                >
+                  ${sectionStudents.map(s => `
+                    <option value="${s.id}" ${s.id === selectedStudent.id ? 'selected' : ''}>
+                      ${s.firstName} ${s.lastName} (${s.id})
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Subject Grades Form -->
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-2">
+              <div>
+                <h2 class="text-lg font-bold text-gray-900">${selectedStudent.firstName} ${selectedStudent.lastName}</h2>
+                <p class="text-xs text-gray-500">Student ID: ${selectedStudent.id} · ${selectedStudent.section}</p>
+              </div>
+              <div class="text-left sm:text-right">
+                <span class="text-3xl font-black text-gray-900">${tempAvg}</span>
+                <div class="mt-0.5">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    tempPass ? 'bg-gradify-pass text-gradify-pass-text' : 'bg-gradify-fail text-gradify-fail-text'
+                  }">
+                    ${tempPass ? 'Passing' : 'Failing'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grade Inputs Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              ${Object.entries(state.gradeEditorTempGrades).map(([subject, val]) => {
+                const isFail = Number(val) < 75;
+                return `
+                  <div class="p-3.5 border rounded-xl transition-all ${isFail ? 'border-rose-300 bg-rose-50/30' : 'border-gray-200 bg-gray-50/50'}">
+                    <label class="block text-xs font-bold text-gray-800 mb-1.5">${subject}</label>
+                    <div class="relative">
+                      <input 
+                        type="number" 
+                        min="0" 
+                        max="100"
+                        value="${val}"
+                        oninput="
+                          state.gradeEditorTempGrades['${subject}'] = Math.min(100, Math.max(0, parseFloat(this.value) || 0));
+                          render();
+                        "
+                        class="w-full text-base font-bold text-gray-900 border ${isFail ? 'border-rose-400 focus:ring-rose-400' : 'border-gray-300 focus:ring-gradify-teal'} rounded-lg px-3 py-1.5 outline-none bg-white"
+                      />
+                      <span class="absolute right-3 top-2.5 text-xs text-gray-400 font-semibold">%</span>
+                    </div>
+                    ${isFail ? `<p class="text-[10px] text-rose-600 font-semibold mt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Below threshold (75)</p>` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Academic Support Priority Warning -->
+            ${lowSubjects.length > 0 ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start space-x-3 text-amber-900 text-xs">
+                <i class="fa-solid fa-circle-exclamation text-amber-600 text-base mt-0.5"></i>
+                <div>
+                  <p class="font-bold">Academic Support Needed</p>
+                  <p class="mt-0.5 text-amber-800 leading-relaxed">
+                    This student is scoring below 75 in: <span class="font-bold">${lowSubjects.map(s => s[0]).join(', ')}</span>.
+                    Remedial sessions or parent consultation is recommended.
+                  </p>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+              <button 
+                onclick="
+                  state.gradeEditorTempGrades = {...selectedStudent.grades};
+                  showToast('Reverted modifications.');
+                  render();
+                "
+                class="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg text-xs transition-colors"
+              >
+                Reset Changes
+              </button>
+              <button 
+                onclick="handleSaveGrades()"
+                class="px-5 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-check text-xs"></i>
+                <span>Save Grades & Calculate</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- REPORTS VIEW ---
+    function renderReports() {
+      return `
+        <div class="p-8 max-w-7xl mx-auto space-y-6">
+          <!-- Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Academic Reports</h1>
+              <p class="text-gray-500 text-sm mt-1">Export summary reports and print official student report cards.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <button 
+                onclick="showToast('Exported Section Summary to CSV.');"
+                class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-file-csv text-xs text-emerald-600"></i>
+                <span>Export CSV</span>
+              </button>
+              <button 
+                onclick="state.showPrintReportModal = true; render();"
+                class="px-4 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-print text-xs"></i>
+                <span>Print Official Summary</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section Summaries Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Acacia Card -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <h2 class="text-lg font-bold text-gray-900">Section 7 · Acacia</h2>
+                  <p class="text-xs text-gray-500">Adviser: Maria D. Cruz</p>
+                </div>
+                <span class="px-3 py-1 bg-teal-50 text-gradify-teal font-bold rounded-full text-xs">
+                  4 Students
+                </span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between py-1 border-b border-gray-50">
+                  <span class="text-gray-500">Section Average</span>
+                  <span class="font-bold text-gray-900">83.75</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-gray-50">
+                  <span class="text-gray-500">Passing Rate</span>
+                  <span class="font-bold text-emerald-600">75% (3/4)</span>
+                </div>
+                <div class="flex justify-between py-1">
+                  <span class="text-gray-500">Highest Rank Student</span>
+                  <span class="font-bold text-gray-900">Liam Garcia (91.00)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Narra Card -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <h2 class="text-lg font-bold text-gray-900">Section 7 · Narra</h2>
+                  <p class="text-xs text-gray-500">Adviser: Maria D. Cruz</p>
+                </div>
+                <span class="px-3 py-1 bg-teal-50 text-gradify-teal font-bold rounded-full text-xs">
+                  4 Students
+                </span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between py-1 border-b border-gray-50">
+                  <span class="text-gray-500">Section Average</span>
+                  <span class="font-bold text-gray-900">80.25</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-gray-50">
+                  <span class="text-gray-500">Passing Rate</span>
+                  <span class="font-bold text-emerald-600">100% (4/4)</span>
+                </div>
+                <div class="flex justify-between py-1">
+                  <span class="text-gray-500">Highest Rank Student</span>
+                  <span class="font-bold text-gray-900">Ethan Flores (91.00)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Student Academic Report List Table -->
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h2 class="text-base font-bold text-gray-900">Quarter 1 Complete Roster Report</h2>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-200">
+                    <th class="py-3 px-3">Student Name</th>
+                    <th class="py-3 px-3">ID</th>
+                    <th class="py-3 px-3">Section</th>
+                    <th class="py-3 px-3 text-center">ENG</th>
+                    <th class="py-3 px-3 text-center">MATH</th>
+                    <th class="py-3 px-3 text-center">SCI</th>
+                    <th class="py-3 px-3 text-center">FIL</th>
+                    <th class="py-3 px-3 text-center">AP</th>
+                    <th class="py-3 px-3 text-center">MAPEH</th>
+                    <th class="py-3 px-3 text-center">AVERAGE</th>
+                    <th class="py-3 px-3 text-right">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 font-medium text-gray-700">
+                  ${state.students.map(s => {
+                    const avg = calcAverage(s.grades);
+                    const pass = isPassing(avg);
+                    return `
+                      <tr class="hover:bg-gray-50">
+                        <td class="py-3 px-3 font-bold text-gray-900">${s.firstName} ${s.lastName}</td>
+                        <td class="py-3 px-3 font-mono text-gray-500">${s.id}</td>
+                        <td class="py-3 px-3 text-gray-600">${s.section}</td>
+                        <td class="py-3 px-3 text-center">${s.grades.English}</td>
+                        <td class="py-3 px-3 text-center">${s.grades.Math}</td>
+                        <td class="py-3 px-3 text-center">${s.grades.Science}</td>
+                        <td class="py-3 px-3 text-center">${s.grades.Filipino}</td>
+                        <td class="py-3 px-3 text-center">${s.grades["Araling Panlipunan"]}</td>
+                        <td class="py-3 px-3 text-center">${s.grades.MAPEH}</td>
+                        <td class="py-3 px-3 text-center font-bold text-gray-900">${avg}</td>
+                        <td class="py-3 px-3 text-right">
+                          <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            pass ? 'bg-gradify-pass text-gradify-pass-text' : 'bg-gradify-fail text-gradify-fail-text'
+                          }">
+                            ${pass ? 'PASSED' : 'FAILED'}
+                          </span>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- PROFILE VIEW ---
+    function renderProfile() {
+      const p = state.teacherProfile;
+      return `
+        <div class="p-8 max-w-4xl mx-auto space-y-6">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Teacher Profile</h1>
+            <p class="text-gray-500 text-sm mt-1">Manage your account settings and preferences.</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+            <!-- Header Info -->
+            <div class="flex items-center space-x-4 pb-6 border-b border-gray-100">
+              <div class="w-16 h-16 rounded-full bg-gradify-teal-light text-gradify-teal font-extrabold flex items-center justify-center text-xl border-2 border-teal-200">
+                MC
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">${p.name}</h2>
+                <p class="text-xs text-gray-500">${p.title} · Faculty ID: <span class="font-mono text-gray-700">${p.facultyId}</span></p>
+                <div class="flex items-center space-x-2 mt-2">
+                  <span class="px-2 py-0.5 bg-teal-50 text-gradify-teal text-[11px] font-bold rounded">Section 7 - Acacia</span>
+                  <span class="px-2 py-0.5 bg-teal-50 text-gradify-teal text-[11px] font-bold rounded">Section 7 - Narra</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Form -->
+            <form onsubmit="event.preventDefault(); showToast('Profile settings saved successfully.');" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Full Name</label>
+                  <input type="text" value="${p.name}" oninput="state.teacherProfile.name = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">School Email</label>
+                  <input type="email" value="${p.email}" disabled class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Faculty ID</label>
+                  <input type="text" value="${p.facultyId}" disabled class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Contact Phone</label>
+                  <input type="text" value="${p.phone}" oninput="state.teacherProfile.phone = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+              </div>
+
+              <!-- Preferences -->
+              <div class="pt-4 border-t border-gray-100 space-y-3">
+                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider">System Preferences</h3>
+                
+                <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                  <span class="text-xs font-medium text-gray-700">Send email alerts for failing student averages</span>
+                  <input type="checkbox" ${p.emailNotifications ? 'checked' : ''} onchange="state.teacherProfile.emailNotifications = this.checked" class="w-4 h-4 text-gradify-teal rounded focus:ring-gradify-teal">
+                </label>
+
+                <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                  <span class="text-xs font-medium text-gray-700">Auto-calculate general average on grade input</span>
+                  <input type="checkbox" ${p.autoCalculateAverage ? 'checked' : ''} onchange="state.teacherProfile.autoCalculateAverage = this.checked" class="w-4 h-4 text-gradify-teal rounded focus:ring-gradify-teal">
+                </label>
+              </div>
+
+              <div class="pt-4 text-right">
+                <button type="submit" class="px-5 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm">
+                  Save Profile Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- LOGIN SCREEN (Desktop - 5.png, 6.png, 7.png) ---
+    function renderLogin() {
+      const err = state.loginErrors;
+
+      return `
+        <div class="min-h-screen flex flex-col md:flex-row bg-white">
+          <!-- Left Dark Navy Section -->
+          <div class="md:w-1/2 bg-gradify-navy p-12 flex flex-col justify-center items-center text-center text-white relative min-h-[400px]">
+            <div class="max-w-md space-y-6">
+              <!-- Logo Graphic -->
+              <div class="w-32 h-32 mx-auto rounded-full border-4 border-teal-500/30 flex items-center justify-center bg-gradify-navy-dark shadow-2xl relative">
+                <i class="fa-solid fa-graduation-cap text-6xl text-amber-500"></i>
+              </div>
+
+              <div>
+                <h1 class="text-4xl font-extrabold tracking-tight">Gradify</h1>
+                <p class="text-sm text-gray-300 mt-2 font-light tracking-wide">Student Grade Management System</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Login Form Section -->
+          <div class="md:w-1/2 p-8 md:p-16 flex flex-col justify-center max-w-lg mx-auto w-full">
+            <div class="space-y-6">
+              <div>
+                <h2 class="text-3xl font-bold text-gray-900">Welcome back, teacher</h2>
+                <p class="text-sm text-gray-500 mt-1">Log in to manage your classroom records.</p>
+              </div>
+
+              <form onsubmit="handleLoginSubmit(event)" class="space-y-5">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">School email</label>
+                  <input 
+                    type="text" 
+                    value="${state.loginEmail}"
+                    oninput="state.loginEmail = this.value"
+                    placeholder="Enter your school email"
+                    class="w-full text-sm border ${err.email ? 'border-rose-500' : 'border-gray-300'} rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-gradify-teal"
+                  />
+                  ${err.email ? `<p class="text-xs text-rose-500 mt-1 font-medium">${err.email}</p>` : ''}
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">Password</label>
+                  <input 
+                    type="password" 
+                    value="${state.loginPassword}"
+                    oninput="state.loginPassword = this.value"
+                    placeholder="Enter your password"
+                    class="w-full text-sm border ${err.password ? 'border-rose-500' : 'border-gray-300'} rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-gradify-teal"
+                  />
+                  ${err.password ? `<p class="text-xs text-rose-500 mt-1 font-medium">${err.password}</p>` : ''}
+                  
+                  <div class="text-right mt-1.5">
+                    <a href="#" onclick="alert('Password reset link sent to registered email.'); return false;" class="text-xs text-gradify-teal font-semibold hover:underline">Forgot password?</a>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  class="w-full py-3 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-sm transition-colors shadow-sm"
+                >
+                  Login
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- MODALS & DIALOGS ---
+
+    // Edit Student Modal (Edit student.png)
+    function renderEditStudentModal() {
+      if (!state.showEditStudentModal) return '';
+      const f = state.editForm;
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-8 space-y-6">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div>
+                <button 
+                  type="button" 
+                  onclick="closeEditStudentModal(true)" 
+                  class="text-xs font-semibold text-gray-500 hover:text-gray-900 inline-flex items-center gap-1 mb-1"
+                >
+                  <i class="fa-solid fa-arrow-left text-[10px]"></i> Back · Student Details
+                </button>
+                <h2 class="text-2xl font-bold text-gray-900">Edit student</h2>
+                <p class="text-xs text-gray-500">Update ${f.firstName} ${f.lastName}’s information. Grade records will not be changed.</p>
+              </div>
+              <button onclick="closeEditStudentModal(true)" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+
+            <!-- Form -->
+            <form onsubmit="saveStudentEdits(event)" class="space-y-6">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Personal Info Panel -->
+                <div class="bg-gray-50/50 p-5 rounded-xl border border-gray-100 space-y-4">
+                  <h3 class="text-sm font-bold text-gray-900 border-b border-gray-200 pb-2">Personal information</h3>
+                  <p class="text-[11px] text-gray-400">Fields marked * are required.</p>
+
+                  <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">First name *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value="${f.firstName}" 
+                        oninput="state.editForm.firstName = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Last name *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value="${f.lastName}" 
+                        oninput="state.editForm.lastName = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block font-semibold text-gray-700 mb-1">Student ID *</label>
+                      <input 
+                        type="text" 
+                        readonly 
+                        value="${f.id}" 
+                        class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg px-3 py-2 outline-none cursor-not-allowed"
+                      />
+                      <p class="text-[10px] text-gray-400 mt-1">School-issued ID. Contact the registrar to change.</p>
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block font-semibold text-gray-700 mb-1">Grade and section *</label>
+                      <select 
+                        onchange="state.editForm.section = this.value; state.isEditFormDirty = true;"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      >
+                        <option value="7 · Acacia" ${f.section.includes('Acacia') ? 'selected' : ''}>Grade 7 · Acacia</option>
+                        <option value="7 · Narra" ${f.section.includes('Narra') ? 'selected' : ''}>Grade 7 · Narra</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Date of birth *</label>
+                      <input 
+                        type="date" 
+                        value="${f.dob}" 
+                        oninput="state.editForm.dob = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Gender</label>
+                      <select 
+                        onchange="state.editForm.gender = this.value; state.isEditFormDirty = true;"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      >
+                        <option value="Female" ${f.gender === 'Female' ? 'selected' : ''}>Female</option>
+                        <option value="Male" ${f.gender === 'Male' ? 'selected' : ''}>Male</option>
+                      </select>
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block font-semibold text-gray-700 mb-1">Enrollment status *</label>
+                      <select 
+                        onchange="state.editForm.status = this.value; state.isEditFormDirty = true;"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      >
+                        <option value="Enrolled" ${f.status === 'Enrolled' ? 'selected' : ''}>Enrolled</option>
+                        <option value="Pending" ${f.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Transferred" ${f.status === 'Transferred' ? 'selected' : ''}>Transferred</option>
+                      </select>
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block font-semibold text-gray-700 mb-1">Home address</label>
+                      <input 
+                        type="text" 
+                        value="${f.address || ''}" 
+                        oninput="state.editForm.address = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Guardian Info Panel -->
+                <div class="bg-gray-50/50 p-5 rounded-xl border border-gray-100 space-y-4">
+                  <h3 class="text-sm font-bold text-gray-900 border-b border-gray-200 pb-2">Guardian and contact information</h3>
+                  <p class="text-[11px] text-gray-400">Used for academic updates and student support.</p>
+
+                  <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Parent / guardian name *</label>
+                      <input 
+                        type="text" 
+                        value="${f.parentName || ''}" 
+                        oninput="state.editForm.parentName = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Relationship *</label>
+                      <select 
+                        onchange="state.editForm.relationship = this.value; state.isEditFormDirty = true;"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      >
+                        <option value="Mother" ${f.relationship === 'Mother' ? 'selected' : ''}>Mother</option>
+                        <option value="Father" ${f.relationship === 'Father' ? 'selected' : ''}>Father</option>
+                        <option value="Guardian" ${f.relationship === 'Guardian' ? 'selected' : ''}>Guardian</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Mobile number *</label>
+                      <input 
+                        type="text" 
+                        value="${f.mobile || ''}" 
+                        oninput="state.editForm.mobile = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label class="block font-semibold text-gray-700 mb-1">Email address</label>
+                      <input 
+                        type="email" 
+                        value="${f.email || ''}" 
+                        oninput="state.editForm.email = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      />
+                    </div>
+
+                    <div class="col-span-2">
+                      <label class="block font-semibold text-gray-700 mb-1">Teacher notes</label>
+                      <textarea 
+                        rows="3" 
+                        oninput="state.editForm.teacherNotes = this.value; state.isEditFormDirty = true;" 
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white"
+                      >${f.teacherNotes || ''}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Actions -->
+              <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                <button 
+                  type="button" 
+                  onclick="closeEditStudentModal(true)" 
+                  class="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  class="px-5 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-check text-xs"></i>
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // Add Student Modal
+    function renderAddStudentModal() {
+      if (!state.showAddStudentModal) return '';
+      const a = state.addForm;
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-8 space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Register New Student</h2>
+                <p class="text-xs text-gray-500">Fill in the student details to create a new profile.</p>
+              </div>
+              <button onclick="state.showAddStudentModal = false; render();" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+
+            <form onsubmit="handleAddStudentSubmit(event)" class="space-y-4 text-xs">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">First Name *</label>
+                  <input type="text" required value="${a.firstName}" oninput="state.addForm.firstName = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Last Name *</label>
+                  <input type="text" required value="${a.lastName}" oninput="state.addForm.lastName = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Section *</label>
+                  <select onchange="state.addForm.section = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white">
+                    <option value="7 · Acacia">7 · Acacia</option>
+                    <option value="7 · Narra">7 · Narra</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Date of Birth</label>
+                  <input type="date" value="${a.dob}" oninput="state.addForm.dob = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Gender</label>
+                  <select onchange="state.addForm.gender = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal bg-white">
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Parent / Guardian Name</label>
+                  <input type="text" value="${a.parentName}" oninput="state.addForm.parentName = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Mobile Number</label>
+                  <input type="text" value="${a.mobile}" oninput="state.addForm.mobile = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-1">Email Address</label>
+                  <input type="email" value="${a.email}" oninput="state.addForm.email = this.value" class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-gradify-teal">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                <button type="button" onclick="state.showAddStudentModal = false; render();" class="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg text-xs">
+                  Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 bg-gradify-teal hover:bg-gradify-teal-dark text-white font-semibold rounded-lg text-xs transition-colors shadow-sm">
+                  Register Student
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // Discard Unsaved Changes Dialog (Edit student-1.png)
+    function renderDiscardChangesModal() {
+      if (!state.showDiscardChangesModal) return '';
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-100">
+            <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div>
+              <h3 class="text-xl font-bold text-gray-900">Discard unsaved changes?</h3>
+              <p class="text-xs text-gray-500 mt-2 leading-relaxed">
+                Your edits have not been saved. Keep editing to review them, or discard changes and return to the previous record.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-3">
+              <button 
+                onclick="state.showDiscardChangesModal = false; render();" 
+                class="px-4 py-2 bg-gradify-teal text-white font-semibold rounded-lg text-xs hover:bg-gradify-teal-dark transition-colors"
+              >
+                Keep editing
+              </button>
+              <button 
+                onclick="closeEditStudentModal(false);" 
+                class="px-4 py-2 bg-rose-600 text-white font-semibold rounded-lg text-xs hover:bg-rose-700 transition-colors"
+              >
+                Discard changes
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Logout Confirmation Modal
+    function renderLogoutModal() {
+      if (!state.showLogoutModal) return '';
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4 border border-gray-100">
+            <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Confirm Logout</h3>
+              <p class="text-xs text-gray-500 mt-1">Are you sure you want to end your current session?</p>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-2">
+              <button 
+                onclick="state.showLogoutModal = false; render();" 
+                class="px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg text-xs hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onclick="handleLogout()" 
+                class="px-4 py-2 bg-rose-600 text-white font-semibold rounded-lg text-xs hover:bg-rose-700 transition-colors shadow-sm"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Print Report Modal
+    function renderPrintReportModal() {
+      if (!state.showPrintReportModal) return '';
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-6">
+            <div class="flex justify-between items-center pb-4 border-b">
+              <h2 class="text-lg font-bold text-gray-900">Official Grade Summary Preview</h2>
+              <button onclick="state.showPrintReportModal = false; render();" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+
+            <!-- Printable Certificate Style View -->
+            <div id="printableArea" class="border p-8 bg-white space-y-6 text-gray-900 font-sans">
+              <div class="text-center space-y-1">
+                <p class="text-xs uppercase tracking-widest font-bold text-gray-500">Asia Source iCollege – Pasig City Branch</p>
+                <h1 class="text-xl font-black text-gray-900">Quarterly Academic Grade Report</h1>
+                <p class="text-xs text-gray-600">Academic Year 2026–2027 · Quarter 1</p>
+              </div>
+
+              <div class="grid grid-cols-2 text-xs border-y py-3 border-gray-200">
+                <div>
+                  <p><span class="font-bold">Faculty Member:</span> Maria D. Cruz</p>
+                  <p><span class="font-bold">Assigned Grade:</span> Grade 7 (Acacia & Narra)</p>
+                </div>
+                <div class="text-right">
+                  <p><span class="font-bold">Date Generated:</span> October 19, 2026</p>
+                  <p><span class="font-bold">Passing Standard:</span> 75.00 General Average</p>
+                </div>
+              </div>
+
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b-2 border-gray-300">
+                    <th class="py-2">Student Name</th>
+                    <th class="py-2">Section</th>
+                    <th class="py-2 text-center">General Avg</th>
+                    <th class="py-2 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  ${state.students.map(s => `
+                    <tr>
+                      <td class="py-2 font-bold">${s.firstName} ${s.lastName}</td>
+                      <td class="py-2">${s.section}</td>
+                      <td class="py-2 text-center font-bold">${calcAverage(s.grades)}</td>
+                      <td class="py-2 text-right">${isPassing(calcAverage(s.grades)) ? 'PASSED' : 'FAILED'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button 
+                onclick="state.showPrintReportModal = false; render();" 
+                class="px-4 py-2 border text-xs font-semibold rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button 
+                onclick="window.print();" 
+                class="px-5 py-2 bg-gradify-teal text-white text-xs font-semibold rounded-lg hover:bg-gradify-teal-dark"
+              >
+                <i class="fa-solid fa-print mr-1"></i> Print / Save as PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toast Banner Component
+    function renderToast() {
+      if (!state.toastMessage) return '';
+      return `
+        <div class="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center space-x-3 transition-all animate-bounce">
+          <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+          <span>${state.toastMessage}</span>
+        </div>
+      `;
+    }
+
+    // --- MAIN RENDER FUNCTION ---
+    function render() {
+      const app = document.getElementById('app');
+
+      if (!state.isLoggedIn) {
+        app.innerHTML = renderLogin();
+        return;
+      }
+
+      let content = '';
+      switch (state.activeTab) {
+        case 'dashboard':
+          content = renderDashboard();
+          break;
+        case 'students':
+          content = renderStudents();
+          break;
+        case 'grades':
+          content = renderGrades();
+          break;
+        case 'reports':
+          content = renderReports();
+          break;
+        case 'profile':
+          content = renderProfile();
+          break;
+        default:
+          content = renderDashboard();
+      }
+
+      app.innerHTML = `
+        <div class="flex min-h-screen">
+          ${renderSidebar()}
+          <main class="flex-1 overflow-y-auto custom-scrollbar">
+            ${content}
+          </main>
+        </div>
+        ${renderEditStudentModal()}
+        ${renderAddStudentModal()}
+        ${renderDiscardChangesModal()}
+        ${renderLogoutModal()}
+        ${renderPrintReportModal()}
+        ${renderToast()}
+      `;
+    }
+
+    // Initialize Application
+    window.onload = function() {
+      render();
+    };
+  </script>
+</body>
+</html>
